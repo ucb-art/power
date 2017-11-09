@@ -1,4 +1,4 @@
-package pfb
+package power
 
 import breeze.math.Complex
 import chisel3._
@@ -7,18 +7,18 @@ import dsptools.numbers._
 import dsptools.numbers.implicits._
 import dspblocks.BlindWrapperModule._
 import freechips.rocketchip.amba.axi4stream.AXI4StreamBundlePayload
-import amba.axi4._
+import freechips.rocketchip.tilelink._ 
 import scala.collection._
 
-class PFBDataTester[T <: Data : Ring](c: AXI4BlindWrapperModule[PFB[T]], in_data: Seq[BigInt], 
-  out_data: mutable.ArrayBuffer[BigInt]) extends PeekPokeTester(c) with AXI4MasterModel[AXI4BlindWrapperModule[PFB[T]]] {
+class PowerDataTester[T<:Data:Ring, V<:Data:Ring](c: TLBlindWrapperModule[Power[T, V]], in_data: Seq[BigInt], 
+  out_data: mutable.ArrayBuffer[BigInt]) extends PeekPokeTester(c) with TLMasterModel[TLBlindWrapperModule[Power[T, V]]] {
 
-  val memAXI = c.mem(0)
+  val memTL = c.mem(0)
   val in  = c.in(0)
   val out = c.out(0)
 
+  tlReset()
   poke(in.valid, 0)
-  axiReset()
   reset(4)
 
   poke(in.valid, 1)
